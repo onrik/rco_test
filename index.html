@@ -28,5 +28,26 @@
             Загрузка 0%
         </div>
     </div>
+
+    <script type="text/javascript">
+        var form = document.getElementById('file-form');
+        var progress = document.getElementById('progress');
+        var file = document.getElementById('file-input');
+
+        form.onsubmit = function(event) {
+            event.preventDefault();
+            var data = new FormData();
+            data.append('file', file.files[0], file.files[0].name)
+
+            var request = new XMLHttpRequest();
+            request.open('POST', '/upload', true);
+            request.onload = function () {
+                var response = JSON.parse(request.response);
+                var url = location.origin + response.url;
+                progress.innerHTML = 'Ссылка: <a href="'+url+'" target="_blank">'+url+'</a>';
+            };
+            request.send(data);
+        }
+    </script>
 </body>
 </html>
