@@ -39,14 +39,27 @@
             var data = new FormData();
             data.append('file', file.files[0], file.files[0].name)
 
+            var fileUploaded = false;
             var request = new XMLHttpRequest();
             request.open('POST', '/upload', true);
             request.onload = function () {
                 var response = JSON.parse(request.response);
+                fileUploaded = true;
+                clearInterval(interval);
                 var url = location.origin + response.url;
                 progress.innerHTML = 'Ссылка: <a href="'+url+'" target="_blank">'+url+'</a>';
             };
             request.send(data);
+
+            var interval = setInterval(function() {
+                fetch('/status').then(function(response){
+                    response.json().then(function(json){
+                        if (!fileUploaded) {
+                            progress.innerHTML = 'Загрузка: ' + json.loaded + ' %';    
+                        }
+                    });
+                });
+            }, 500);
         }
     </script>
 </body>
